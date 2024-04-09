@@ -1,0 +1,16 @@
+:host {
+    width: 100vw;
+    padding: 5px 10px;
+    background: #20203b;
+    box-shadow: rgb(48, 50, 77) 0px 20px 30px -10px;
+    .header-wrapper {
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        .title {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 600;
+        }
+    }
+}

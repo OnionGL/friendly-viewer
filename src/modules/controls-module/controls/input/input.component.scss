@@ -1,0 +1,28 @@
+:host {
+    input {
+        width: 100%;
+        transition: 0.3s;
+        padding-bottom: 10px;
+        padding-left: 5px;
+        font-size: 14px;
+        border: none;
+        background: none;
+        color: #fff;
+        border-bottom: 1px solid #393939 ; 
+        caret-color: #b6b2dc;
+
+        &::placeholder {
+            font-size: 14px;
+            color: #fff;
+        }
+
+        &:focus{
+            outline: none;
+            border-bottom: 1px solid #b6b2dc ;
+            &::placeholder {
+                color: #b6b2dc;
+                opacity: 0.4;
+            }
+        }
+    }
+}  

@@ -1,0 +1,46 @@
+<div class="left-wrapper">
+    <div class="login-wrapper">
+
+        <div class="title">
+            OnionCaller
+        </div>
+
+        <div class="form-wrapper">
+            <div class="login-input">
+                <div class="label">Email</div>
+                <input-component 
+                    [params]="{
+                        formControl: emailFormControl,
+                        placeholder: 'Email'
+                    }">
+                </input-component>
+            </div>
+        
+            <div class="login-input">
+                <div class="label">Password</div>
+                <input-component 
+                    [params]="{
+                        formControl: passwordFormControl, 
+                        placeholder: 'Password',
+                        type: 'password'
+                    }">
+                </input-component>
+            </div>
+            <div class="button-wrapper">
+                <button class="login" (click)="login()">
+                    Войти
+                </button>
+                <!-- <button class="register" (click)="register()">
+                    Регистрация
+                </button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template footerContent>
+    <div>
+        ASDASDASDASDASDASDSAD
+    </div>
+</ng-template>
+

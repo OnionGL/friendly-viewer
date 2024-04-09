@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FooterService } from '../services/footer/FooterService.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'spa';
+  constructor(public footerService: FooterService) {}
 }

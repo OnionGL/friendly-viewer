@@ -1,0 +1,64 @@
+:host {
+    overflow: hidden;    
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    .left-wrapper {
+        width: 100%;
+        .login-wrapper {
+            display: flex;      
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+
+            .title {
+                font-size: 30px;
+                font-weight: 600;
+                margin-bottom: 40px;
+                color: #fff;
+            }
+
+            .form-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 40px;
+                min-width: 300px;
+            }
+
+            .button-wrapper {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+    
+                button {
+                    background: none;
+                    border: none;
+                    outline: none;
+                    color: #fff;
+                    width: 100%;
+                    cursor: pointer;
+                    font-weight: 600;
+                }
+    
+                .login {
+                    background: #1900ff;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                }
+    
+            }
+        }  
+    }
+
+
+    .label {
+        font-size: 11px;
+        margin-bottom: 10px;
+        color: #b6b2dc;
+    }
+
+
+}
+
+
