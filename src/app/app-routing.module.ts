@@ -1,11 +1,11 @@
 import { Component, NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
-import { UserPageComponent } from '../modules/user-module/user-page/user-page.component';
 import { UserService } from '../modules/user-module/user.service';
-import { LoginComponent } from '../modules/login-module/component/login.component';
 import { CookieService } from 'ngx-cookie-service';
-import { LoginService } from '../modules/login-module/Login.service';
-import { HomeComponent } from '../modules/home-module/component/home.component';
+import { LoginService } from '../services/login/login.service';
+import { ViewerComponent } from '../components/viewer/viewer.component';
+import { LoginComponent } from '../components/login/login.component';
+import { PersonalAreaComponent } from '../components/personal-area/personal-area.component';
 
 @Component({template: ''})
 export class RedirectStartPageComponent {
@@ -28,7 +28,7 @@ export class RedirectStartPageComponent {
 const routes: Routes = [
   {
     path: 'home',
-    component: HomeComponent,
+    component: ViewerComponent,
 
   },
   {
@@ -37,7 +37,7 @@ const routes: Routes = [
   },
   {
     path: 'personalArea',
-    component: UserPageComponent
+    component: PersonalAreaComponent
   },
   // {
   //   path: 'createRoom',

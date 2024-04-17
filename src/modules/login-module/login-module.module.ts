@@ -1,11 +1,16 @@
 import { NgModule } from '@angular/core';
 import { LoginApiService } from '../../services/ApiService/apiServices/Login/Login.service';
-import { LoginComponent } from './component/login.component';
-import { LoginService } from './Login.service';
 import { ControlsModule } from '../controls-module/controls-module.module';
+import { LoginService } from '../../services/login/login.service';
+import { LoginComponent } from '../../components/login/login.component';
+import { FooterDirective } from '../../directive/footer.directive';
+import { SharedModule } from '../../directive/directive.module';
 
 @NgModule({
-    imports: [ControlsModule],
+    imports: [
+        ControlsModule,
+        SharedModule
+    ],
     exports: [
         LoginComponent
     ],

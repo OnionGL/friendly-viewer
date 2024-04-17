@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FooterService } from '../services/footer/FooterService.service';
+import { HeaderService } from '../services/header/header.service';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,5 @@ import { FooterService } from '../services/footer/FooterService.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  constructor(public footerService: FooterService) {}
+  constructor(public footerService: FooterService , public headerService: HeaderService) {}
 }

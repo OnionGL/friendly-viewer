@@ -1,0 +1,3 @@
+<div *ngIf="alertService.alertChanges | async">
+    {{(alertService.alertChanges | async).content}}
+</div>

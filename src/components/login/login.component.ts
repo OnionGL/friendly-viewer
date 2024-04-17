@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { LoginService } from "../Login.service";
 import { FormControl } from "@angular/forms";
-import { TUser } from "../../../services/ApiService/apiServices/Login/types";
 import { Router } from "@angular/router";
+import { LoginService } from "../../services/login/login.service";
+import { AlertService } from "../../services/alert/alertService.service";
 
 
 @Component({
@@ -19,15 +19,18 @@ export class LoginComponent implements OnInit , OnDestroy {
 
     constructor(
         private loginService: LoginService,
-        private router: Router
+        private router: Router,
+        private alertService: AlertService
         ) {}
 
-    public ngOnInit(): void {  }
+    public ngOnInit(): void { 
+        this.alertService.createAlert({content: 'TEST'})
+    }
 
     public ngOnDestroy(): void { }
 
     public login() {
-        const user:TUser = {email: this.emailFormControl.value,
+        const user:any = {email: this.emailFormControl.value,
                       password: this.passwordFormControl.value}
 
         this.loginService.loginUser(user).subscribe(() => {
@@ -36,7 +39,7 @@ export class LoginComponent implements OnInit , OnDestroy {
     }
 
     public register() {
-        const user:TUser = {email: this.emailFormControl.value,
+        const user:any = {email: this.emailFormControl.value,
             password: this.passwordFormControl.value}
 
         this.loginService.registerUser(user).subscribe(res => console.log(res))

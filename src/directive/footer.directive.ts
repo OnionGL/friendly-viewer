@@ -10,6 +10,7 @@ export class FooterDirective implements OnInit, OnDestroy {
     constructor(private el: TemplateRef<any>, private footerService: FooterService) {}
 
     public ngOnInit(){
+        console.log("ON INIT" , this.el)
         this.footerService.setTemplateRef(this.el)
     }
     

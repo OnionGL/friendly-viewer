@@ -1,5 +1,10 @@
 :host {
     display: block;
     height: 52px;
-    background: red;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    .footer-wrapper {
+        height: 100%;
+    }
 }

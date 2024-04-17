@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core"
 import { TUser } from "../../services/ApiService/apiServices/Login/types"
-import { LoginService } from "../login-module/Login.service"
 import { CookieService } from "ngx-cookie-service"
 import { Observable, of, share } from "rxjs"
+import { LoginService } from "../../services/login/login.service"
 
 
 @Injectable({providedIn: 'root'})

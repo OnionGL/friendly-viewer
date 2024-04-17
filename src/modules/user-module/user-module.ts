@@ -1,18 +1,18 @@
 import { NgModule } from "@angular/core";
-import { UserPageComponent } from "./user-page/user-page.component";
 import { UserService } from "./user.service";
 import { CommonModule } from "@angular/common";
 import { BrowserModule } from "@angular/platform-browser";
+import { PersonalAreaComponent } from "../../components/personal-area/personal-area.component";
 
 @NgModule({
     imports: [
         BrowserModule
     ],
     exports: [
-        UserPageComponent
+        PersonalAreaComponent
     ],
     declarations: [
-        UserPageComponent
+        PersonalAreaComponent
     ]
 })
 
