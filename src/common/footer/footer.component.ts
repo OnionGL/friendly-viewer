@@ -1,6 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import {Location} from '@angular/common';
-import { FooterService } from "../../services/footer/FooterService.service";
+import { FooterService } from "../../services/footer/footer.service";
 
 
 @Component({
@@ -10,6 +10,8 @@ import { FooterService } from "../../services/footer/FooterService.service";
 })
 
 export class FooterComponent {
+
+    @Input() isBackButton: boolean = true
     
     constructor(private _location: Location , public footerService: FooterService){}
 

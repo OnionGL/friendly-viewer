@@ -8,7 +8,6 @@ export class FooterService {
     constructor() {}
 
     public setTemplateRef(templateRef: TemplateRef<any>) {
-        console.log("Set" , templateRef)
         this.templateRef = templateRef
     }
 

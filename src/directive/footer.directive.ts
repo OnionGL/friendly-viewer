@@ -1,5 +1,5 @@
 import { Directive, OnChanges, OnDestroy, OnInit, TemplateRef } from "@angular/core";
-import { FooterService } from "../services/footer/FooterService.service";
+import { FooterService } from "../services/footer/footer.service";
 
 @Directive({
     selector: '[footerContent]'
@@ -7,10 +7,11 @@ import { FooterService } from "../services/footer/FooterService.service";
 
 export class FooterDirective implements OnInit, OnDestroy {
 
-    constructor(private el: TemplateRef<any>, private footerService: FooterService) {}
+    constructor(private el: TemplateRef<any>, private footerService: FooterService) {
+        footerService.setTemplateRef(el)
+    }
 
     public ngOnInit(){
-        console.log("ON INIT" , this.el)
         this.footerService.setTemplateRef(this.el)
     }
     

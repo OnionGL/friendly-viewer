@@ -4,12 +4,12 @@ import { ControlsModule } from '../controls-module/controls-module.module';
 import { LoginService } from '../../services/login/login.service';
 import { LoginComponent } from '../../components/login/login.component';
 import { FooterDirective } from '../../directive/footer.directive';
-import { SharedModule } from '../../directive/directive.module';
+import { DirectiveModule } from '../../directive/directive.module';
 
 @NgModule({
     imports: [
         ControlsModule,
-        SharedModule
+        DirectiveModule
     ],
     exports: [
         LoginComponent

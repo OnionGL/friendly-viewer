@@ -1,10 +1,30 @@
 :host {
     display: block;
     height: 52px;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
+    background: #20203b;
+    padding: 0 20px;
+
+    button {
+        border: none;
+        background: none;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
     .footer-wrapper {
+        display: flex;
+        align-items: center;
         height: 100%;
+
+        .button-back {
+            background: #514b71;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
     }
 }

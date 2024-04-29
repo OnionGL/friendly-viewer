@@ -1,0 +1,30 @@
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+
+    button {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .create-room-wrapper {
+
+        padding: 20px 40px;
+        border: 10px solid #fff;
+        background-color: #20203b;
+        border-radius: 12px;
+
+        .create-room-button {
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 54px;
+            color: #fff;
+        }
+    }
+
+
+}

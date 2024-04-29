@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { Router } from "@angular/router";
 import { LoginService } from "../../services/login/login.service";
-import { AlertService } from "../../services/alert/alertService.service";
+import { AlertService, AlertTypes } from "../../services/alert/alertService.service";
 
 
 @Component({
@@ -23,9 +23,7 @@ export class LoginComponent implements OnInit , OnDestroy {
         private alertService: AlertService
         ) {}
 
-    public ngOnInit(): void { 
-        this.alertService.createAlert({content: 'TEST'})
-    }
+    public ngOnInit(): void { }
 
     public ngOnDestroy(): void { }
 

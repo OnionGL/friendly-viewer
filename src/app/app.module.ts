@@ -11,23 +11,32 @@ import { FooterComponent } from '../common/footer/footer.component';
 import { FooterDirective } from '../directive/footer.directive';
 import { HeaderDirective } from '../directive/header.directive';
 import { LoginService } from '../services/login/login.service';
-import { SharedModule } from '../directive/directive.module';
+import { DirectiveModule } from '../directive/directive.module';
 import { AlertComponent } from '../common/alert/alert.component';
+import { ViewerModule } from '../modules/viewer-module/viewer.module';
+import { UserModule } from '../modules/user-module/user-module';
+import {MatDialogModule} from '@angular/material/dialog'
+import { ModalModule } from '../modules/modal-module/modal-module';
+import { CreateRoomComponent } from '../components/create-room/createRoom.component';
 
 @NgModule({
-  exports: [HeaderDirective , FooterDirective],
   declarations: [
     AppComponent,
     HeaderComponent,
     FooterComponent,
-    AlertComponent
+    AlertComponent,
+    CreateRoomComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     LoginModule,
-    SharedModule,
+    DirectiveModule,
+    ViewerModule,
+    UserModule,
+    MatDialogModule,
+    ModalModule
   ],
   providers: [LoginService, provideAnimationsAsync()],
   bootstrap: [AppComponent]

@@ -1,19 +1,22 @@
-import { Directive, TemplateRef } from '@angular/core';
+import { Directive, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { HeaderService } from '../services/header/header.service';
 
 @Directive({
   selector: '[headerContent]'
 })
-export class HeaderDirective {
+
+export class HeaderDirective implements OnInit, OnDestroy {
+
   constructor(private el: TemplateRef<any>, private headerService: HeaderService) {
     headerService.setTemplateRef(el)
   }
 
-  ngOnInit(){
+  public ngOnInit() {
     this.headerService.setTemplateRef(this.el)
   }
 
-  ngOnDestroy(){
+  public ngOnDestroy() {
     this.headerService.clearTemplateRef()
   }
+
 }

@@ -87,9 +87,17 @@ table {
 	border-spacing: 0;
 }
 
+.cdk-global-scrollblock {
+	overflow: hidden;
+}
+
+
 
 body {
   margin: 0;
   background: #12121e;
   overflow: hidden;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

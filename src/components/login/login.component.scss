@@ -30,6 +30,7 @@
                 display: flex;
                 width: 100%;
                 justify-content: space-between;
+                gap: 10px;
     
                 button {
                     background: none;
@@ -41,10 +42,10 @@
                     font-weight: 600;
                 }
     
-                .login {
+                .login , .register {
                     background: #1900ff;
                     padding: 10px 20px;
-                    border-radius: 20px;
+                    border-radius: 12px;
                 }
     
             }

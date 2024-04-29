@@ -6,6 +6,7 @@ import { LoginService } from '../services/login/login.service';
 import { ViewerComponent } from '../components/viewer/viewer.component';
 import { LoginComponent } from '../components/login/login.component';
 import { PersonalAreaComponent } from '../components/personal-area/personal-area.component';
+import { CreateRoomComponent } from '../components/create-room/createRoom.component';
 
 @Component({template: ''})
 export class RedirectStartPageComponent {
@@ -17,7 +18,7 @@ export class RedirectStartPageComponent {
         if(this.cookie.get('token')) {
           this.loginService.getCurrentUser(this.cookie.get('token')).subscribe(user => {
             userService.currentUser = user
-            router.navigate([`home`])
+            router.navigate([`createRoom`])
           })  
         } else {
           router.navigate(['login'])
@@ -27,7 +28,7 @@ export class RedirectStartPageComponent {
 
 const routes: Routes = [
   {
-    path: 'home',
+    path: 'room',
     component: ViewerComponent,
 
   },
@@ -39,10 +40,10 @@ const routes: Routes = [
     path: 'personalArea',
     component: PersonalAreaComponent
   },
-  // {
-  //   path: 'createRoom',
-  //   component: CreateRoomComponent
-  // },
+  {
+    path: 'createRoom',
+    component: CreateRoomComponent
+  },
   {
     path: '**',
     component: RedirectStartPageComponent

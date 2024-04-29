@@ -1,0 +1,99 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    align-items: center;
+
+    button {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .viewer-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        width: 50%;
+        height: 50%;
+        border-radius: 22px;
+
+        .add-video-popup {
+            border: 4px dashed #949292;
+            border-radius: 50%;
+            padding: 25px 55px;
+            font-size: 100px;
+            color: #949292;
+        }
+
+        .add-video-subtitle {
+            font-size: 32px;
+            color: #fff;
+        }
+
+    }
+
+    .persons-wrapper {
+        display: flex;
+        gap: 60px;
+        width: 100%;
+        justify-content: center;
+        border-top: 5px solid #20203b;
+        padding-top: 25px;
+
+        .person-wrapper {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .person-text {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .person-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #514b71;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: inherit;
+            }
+
+        }
+
+    }
+
+    .add-more-persons {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 20px;
+
+        .add-more-person-popup {
+            border: 4px dashed #514b71;
+            border-radius: 50%;
+            padding: 24px 35px;
+            font-size: 38px;
+            color: #514b71;
+        }
+
+        .add-more-person-subtitle {
+            color: #fff;
+            font-size: 16px;
+        }
+
+
+    }
+
+}

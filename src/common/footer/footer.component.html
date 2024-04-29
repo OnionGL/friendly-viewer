@@ -1,3 +1,9 @@
 <div class="footer-wrapper">
+
     <ng-content *ngTemplateOutlet="footerService.templateRef"></ng-content>
+
+    <button class="button-back" *ngIf="isBackButton" (click)="redirectToPrevPage()">
+        Назад
+    </button>
+
 </div>
