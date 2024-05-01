@@ -17,7 +17,11 @@ import { ViewerModule } from '../modules/viewer-module/viewer.module';
 import { UserModule } from '../modules/user-module/user-module';
 import {MatDialogModule} from '@angular/material/dialog'
 import { ModalModule } from '../modules/modal-module/modal-module';
-import { CreateRoomComponent } from '../components/create-room/createRoom.component';
+import { RoomModule } from '../modules/room-module/room.module';
+import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+
+
+const config: SocketIoConfig = {url: 'http://localhost:9000' , options: {}} 
 
 @NgModule({
   declarations: [
@@ -25,7 +29,6 @@ import { CreateRoomComponent } from '../components/create-room/createRoom.compon
     HeaderComponent,
     FooterComponent,
     AlertComponent,
-    CreateRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +39,9 @@ import { CreateRoomComponent } from '../components/create-room/createRoom.compon
     ViewerModule,
     UserModule,
     MatDialogModule,
-    ModalModule
+    ModalModule,
+    RoomModule,
+    SocketIoModule.forRoot(config)
   ],
   providers: [LoginService, provideAnimationsAsync()],
   bootstrap: [AppComponent]

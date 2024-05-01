@@ -28,7 +28,7 @@ export class RedirectStartPageComponent {
 
 const routes: Routes = [
   {
-    path: 'room',
+    path: 'room/:roomId',
     component: ViewerComponent,
 
   },

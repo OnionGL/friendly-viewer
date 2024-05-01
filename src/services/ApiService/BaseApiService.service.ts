@@ -23,7 +23,7 @@ export class BaseApiService<T> {
     }
 
     public post(model: T): Observable<any> {
-        return this.http.post(`/api/user` , model).pipe(
+        return this.http.post(`${this.baseUrl}` , model).pipe(
             pluck(this.entityName)
         )
     }
