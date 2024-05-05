@@ -30,9 +30,7 @@ export class LoginService {
     }
 
     public getCurrentUser(token: string): Observable<TUser> {
-        return this.loginApiService.getUserByToken(token).pipe(
-            tap(data => console.log("getCurrentUser" , data))
-        )
+        return this.loginApiService.getUserByToken(token)
     }
 
 }

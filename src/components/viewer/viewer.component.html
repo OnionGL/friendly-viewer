@@ -11,14 +11,14 @@
 </div>
 
 <div class="persons-wrapper">
-    <div class="person-wrapper" *ngFor="let user of users">
+    <div class="person-wrapper" *ngFor="let user of (usersInRoom | async)">
 
         <div class="person-image">
-            <img src="https://img.freepik.com/free-photo/view-3d-adorable-cat-with-fluffy-clouds_23-2151113419.jpg?t=st=1713706375~exp=1713709975~hmac=84207f4f7132dd9ef3bb0987e5a284423a3a5beb1609c06ad5a16cd87f97830c&w=740" alt="">
+            <img src="" alt="Image">
         </div>
 
         <div class="person-text">
-            {{user.name}}
+            {{user}}
         </div>
 
     </div>

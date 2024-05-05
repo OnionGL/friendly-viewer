@@ -17,13 +17,13 @@ export class BaseApiService<T> {
     }
 
     public get(id: number) {
-        return this.http.get(`${this.baseUrl}/${id}`).pipe(
+        return this.http.get(`api/${this.baseUrl}/${id}`).pipe(
             pluck(this.entityName)
         )
     }
 
     public post(model: T): Observable<any> {
-        return this.http.post(`${this.baseUrl}` , model).pipe(
+        return this.http.post(`api/${this.baseUrl}` , model).pipe(
             pluck(this.entityName)
         )
     }
