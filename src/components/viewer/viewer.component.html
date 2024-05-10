@@ -14,11 +14,11 @@
     <div class="person-wrapper" *ngFor="let user of (usersInRoom | async)">
 
         <div class="person-image">
-            <img src="" alt="Image">
+            <img src="assets/default-images/default-image.jpg" alt="Image">
         </div>
 
         <div class="person-text">
-            {{user}}
+            {{user?.name ?? 'unknown'}}
         </div>
 
     </div>

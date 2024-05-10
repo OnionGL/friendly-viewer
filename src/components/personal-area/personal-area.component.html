@@ -1,61 +1,79 @@
 <ng-template headerContent></ng-template>
 <div *ngIf="(currentUser | async) as user">
-    <div class="title">
-        Личный кабинет
-    </div>
-    
-    <div class="content-wrapper">
-    
-        <div class="image-wrapper">
-            <img [src]="user.image ?? '/assets/default-image.jpg'" alt="">
+    <div *ngIf="(modeChanges | async) as mode">
+        <div class="title">
+            Личный кабинет
         </div>
-    
-    
-        <div class="info-container">
-    
-            <div class="info-wrapper">
-                <div class="info-item">
-                    <div class="info-title">
-                        Имя:
-                    </div>
-                    <div class="info-value">
-                        Пользователь 1
-                    </div>
-                </div>
+        
+        <div class="content-wrapper">
+        
+            <div class="image-wrapper">
+                <img [src]="newImage ?? (imageUser | async) ?? '/assets/default-images/default-image.jpg'" alt="">
             </div>
         
-            <div class="info-wrapper">
-                <div class="info-item">
-                    <div class="info-title">
-                        Почта:
-                    </div>
-                    <div class="info-value">
-                        {{'test@gmail.com'}}
-                    </div>
-                </div>
-            </div>
-    
-            <div class="info-wrapper">
-                <div class="info-item">
-                    <div class="info-title">
-                        Пароль:
-                    </div>
-                    <div class="info-value">
-                        **************
+            <div class="info-container">
+        
+                <div class="info-wrapper">
+                    <div class="info-item">
+                        <div class="info-title">
+                            Имя:
+                        </div>
+                        <div class="info-value">
+                            <div *ngIf="mode == 'read'">
+                                {{currentUserApi?.name}}
+                            </div>
+                            <div *ngIf="mode == 'redact'">
+                                <input type="text" [formControl]="nameFormControl">
+                            </div>
+                        </div>
                     </div>
                 </div>
+            
+                <div class="info-wrapper">
+                    <div class="info-item">
+                        <div class="info-title">
+                            Почта:
+                        </div>
+                        <div class="info-value">
+                            <div *ngIf="mode == 'read'">
+                                {{currentUserApi?.email}}
+                            </div>
+                            <div *ngIf="mode == 'redact'">
+                                <input type="email" [formControl]="emailFormControl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="info-wrapper">
+                    <div class="info-item">
+                        <div class="info-title">
+                            Пароль:
+                        </div>
+                        <div class="info-value">
+                            <div *ngIf="mode == 'read'">
+                                ********
+                            </div>
+                            <div *ngIf="mode == 'redact'">
+                                <input type="password" [formControl]="passwordFromControl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
             </div>
-    
+        </div>
+        
+        <div class="button-wrapper">
+            <button (click)="setNewAvatar()">
+                Сменить аватар
+            </button>
+            <button (click)="onRedactorMode()">
+                Редактировать
+            </button>
         </div>
     </div>
-    
-    <div class="button-wrapper">
-        <button>
-            Сменить аватар
-        </button>
-        <button (click)="onRedactorMode()">
-            Редактировать
-        </button>
-    </div>
 </div>
-<!-- <ng-template footerContent [isBackButton]="false"></ng-template> -->
+<ng-template footerContent [isBackButton]="false">
+    <button class="save-button" (click)="updateUser()">Сохранить</button>
+</ng-template>

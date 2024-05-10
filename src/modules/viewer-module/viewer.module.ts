@@ -17,7 +17,9 @@ import { CommonModule } from "@angular/common";
     declarations: [
         ViewerComponent
     ],
-    providers: [ViewerService]
+    providers: [
+        ViewerService
+    ]
 })
 
 export class ViewerModule {}

@@ -3,7 +3,7 @@ export type TUser = {
     email: string
     name: string
     password: string
-    image: string
+    imageId: number
 }
 
 export type TUserResponse = {

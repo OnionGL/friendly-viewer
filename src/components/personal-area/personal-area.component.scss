@@ -68,11 +68,20 @@
                     }
     
                     .info-value {
+                        min-height: 38px;
                         background: #514b71;
                         width: 100%;
                         align-items: center;
                         border-radius: 8px;
                         padding: 10px 20px;
+
+                        input {
+                            background: transparent;
+                            border: none;
+                            color: #fff;
+                            font-size: 16px;
+                        }
+
                     }
     
                 }
@@ -101,4 +110,20 @@
 
         }
 
-}
+        
+    }
+
+    .save-button {
+        background: #514b71;
+        border-radius: 12px;
+        outline: none;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
+        transition: .4s;
+        &:hover {
+            background: #2e2b44;
+        }
+    }
