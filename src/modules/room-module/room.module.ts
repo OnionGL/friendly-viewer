@@ -1,8 +1,8 @@
 import { NgModule } from "@angular/core";
 import { CreateRoomComponent } from "../../components/create-room/createRoom.component";
-import { RoomService } from "./room.service";
 import { DirectiveModule } from "../../directive/directive.module";
-import { RoomApiService } from "../../services/ApiService/apiServices/room/roomApi.service";
+import { RoomApiService } from "../../api-services/room/roomApi.service";
+import { RoomService } from "../../services/room/room.service";
 
 @NgModule({
     imports: [DirectiveModule],

@@ -1,12 +1,12 @@
 import { Component, NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
-import { UserService } from '../modules/user-module/user.service';
 import { CookieService } from 'ngx-cookie-service';
 import { LoginService } from '../services/login/login.service';
 import { ViewerComponent } from '../components/viewer/viewer.component';
 import { LoginComponent } from '../components/login/login.component';
 import { PersonalAreaComponent } from '../components/personal-area/personal-area.component';
 import { CreateRoomComponent } from '../components/create-room/createRoom.component';
+import { UserService } from '../services/user/user.service';
 
 @Component({template: ''})
 export class RedirectStartPageComponent {
@@ -16,7 +16,7 @@ export class RedirectStartPageComponent {
               private loginService: LoginService 
             ){
         if(this.cookie.get('token')) {
-          this.loginService.getCurrentUser(this.cookie.get('token')).subscribe(user => {
+          this.loginService.getCurrentUserByToken(this.cookie.get('token')).subscribe(user => {
             userService.currentUser = user
             router.navigate([`createRoom`])
           })  

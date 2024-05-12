@@ -1,7 +1,7 @@
 <ng-template headerContent></ng-template>
 
 
-<div class="viewer-wrapper">
+<div class="viewer-wrapper" *ngIf="!(videoData | async)">
     <button class="add-video-popup" (click)="openAddVideoPopup()">
         +
     </button>
@@ -10,11 +10,18 @@
     </div>
 </div>
 
+<div class="viewer-wrapper" *ngIf="(videoData | async)">
+    <video #videoPlayer controls="false">
+        <source [src]="(videoData | async)" type="video/mp4">
+    </video>
+</div>
+<button class="button-play" (click)="togglePlayVideo($event)"></button>
+
 <div class="persons-wrapper">
     <div class="person-wrapper" *ngFor="let user of (usersInRoom | async)">
 
         <div class="person-image">
-            <img src="assets/default-images/default-image.jpg" alt="Image">
+            <img [src]="user?.image ?? 'assets/default-images/default-image.jpg'" alt="Image">
         </div>
 
         <div class="person-text">

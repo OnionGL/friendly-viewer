@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { HeaderService } from "../../services/header/header.service";
 import { Router } from "@angular/router";
-import { UserService } from "../../modules/user-module/user.service";
 import { Observable, first, map, of, switchMap, tap } from "rxjs";
-import { TUser } from "../../services/ApiService/apiServices/Login/types";
-import { UserApiService } from "../../services/ApiService/users/users.service";
-import { FileUploadService } from "../../services/ApiService/fileUpload/fileUpload.service";
+import { UserApiService } from "../../api-services/users/users.service";
+import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
 import { ImagesService } from "../../services/image/images.servise";
+import { TUser } from "../../types/user";
+import { UserService } from "../../services/user/user.service";
 
 @Component({
     selector: 'header',
@@ -18,17 +18,21 @@ export class HeaderComponent implements OnInit {
 
     public currentUser: Observable<TUser>
 
-    public imageUser: Observable<string>
+    public user: Observable<TUser & {image?: string}>
 
-    constructor(public headerService: HeaderService , private router: Router, private userService: UserService , private userApiService: UserApiService , private uploadService: FileUploadService , private imagesService: ImagesService) {}
+    constructor(public headerService: HeaderService, 
+                private router: Router, private userService: UserService, 
+                private userApiService: UserApiService, 
+                private uploadService: FileUploadService, 
+                private imagesService: ImagesService) {}
 
     public ngOnInit(): void {
         this.currentUser = this.userService.currentUser
-        this.imageUser = this.currentUser.pipe(
+        this.user = this.currentUser.pipe(
             first(),
             map(({id}) => id),
-            switchMap(id => this.userApiService.getUserById(id)),
-            switchMap(current => current.imageId ? this.imagesService.getImageById(current.imageId) : of(null)),
+            switchMap(id => this.userApiService.get(id)),
+            switchMap(current => current.imageId ? this.imagesService.getImageById(current.imageId).pipe(map(image => ({...current , image}))) : of(null).pipe(map(_ => ({...current})))),
         )
     }
 

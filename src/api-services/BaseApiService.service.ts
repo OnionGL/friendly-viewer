@@ -16,20 +16,16 @@ export class BaseApiService<T> {
         this.http = injector.get(HttpClient)
     }
 
-    public get(id: number) {
-        return this.http.get(`api/${this.baseUrl}/${id}`).pipe(
-            pluck(this.entityName)
-        )
+    public get(id: number): Observable<T> {
+        return this.http.get(`api/${this.baseUrl}/${id}`) as Observable<T>
     }
 
     public post(model: T): Observable<any> {
-        return this.http.post(`api/${this.baseUrl}` , model).pipe(
-            pluck(this.entityName)
-        )
+        return this.http.post(`api/${this.baseUrl}` , model) as Observable<any>
     }
 
-    public test() {
-        return this.http.get(`/api`)
+    public patch(model: T extends {id: number} ? Partial<T> : {id: number}): Observable<T> {
+        return this.http.patch(`api/${this.baseUrl}/${model.id}` , model) as Observable<T>
     }
 
 }

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { LoginApiService } from "../../services/ApiService/apiServices/Login/Login.service";
-import { TUser, TUserResponse } from "../../services/ApiService/apiServices/Login/types";
+import { LoginApiService } from "../../api-services/login/Login.service";
 import { Observable, tap } from "rxjs";
 import { CookieService } from "ngx-cookie-service";
+import { TUser, TUserResponse } from "../../types/user";
 
 @Injectable()
 export class LoginService {
@@ -29,7 +29,7 @@ export class LoginService {
         )
     }
 
-    public getCurrentUser(token: string): Observable<TUser> {
+    public getCurrentUserByToken(token: string): Observable<TUser> {
         return this.loginApiService.getUserByToken(token)
     }
 

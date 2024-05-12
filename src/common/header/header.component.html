@@ -6,10 +6,10 @@
 
     <div class="personal-area">
         <div class="personal-name">
-            Пользователь 1
+           {{(user | async)?.name}}
         </div>
         <button class="button-navigate" (click)="routeToPersonalArea()">
-            <img [src]="(imageUser | async) ?? '/assets/default-images/default-image.jpg'" alt="">
+            <img [src]="(user | async)?.image ?? '/assets/default-images/default-image.jpg'" alt="">
         </button>
     </div>
 

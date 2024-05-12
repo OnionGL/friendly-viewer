@@ -1,9 +1,10 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
-import { RoomApiService } from "../../services/ApiService/apiServices/room/roomApi.service";
-import { finalize } from "rxjs";
+import { RoomApiService } from "../../api-services/room/roomApi.service";
+import { finalize, switchMap } from "rxjs";
 import {webSocket} from 'rxjs/webSocket'
 import { Socket } from "ngx-socket-io";
+import { UserService } from "../../services/user/user.service";
 
 @Component({
     selector: 'create-room',
@@ -15,15 +16,16 @@ import { Socket } from "ngx-socket-io";
 export class CreateRoomComponent {
 
 
-    constructor(private router: Router , private roomApiService: RoomApiService , private socket: Socket) {}
+    constructor(private router: Router , private roomApiService: RoomApiService , private socket: Socket , private userService: UserService) {}
 
 
 
     public createRoom() {
-        this.roomApiService.createRoomWebSocket()
-            .subscribe(({roomId}) => {
-                this.router.navigate(['room' , roomId])
-            })
+        this.userService.currentUser.pipe(
+            switchMap(({id}) => this.roomApiService.createRoomWebSocket(id))
+        ).subscribe(({roomId}) => {
+            this.router.navigate(['room' , roomId])
+        })
     }
 
 }

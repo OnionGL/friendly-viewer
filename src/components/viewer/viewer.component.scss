@@ -11,6 +11,14 @@
         cursor: pointer;
     }
 
+    .button-play {
+        position: absolute;
+        bottom: 8.2%;
+        left: 1.5%;
+        border: 7px solid transparent;
+        border-left: 11px solid #fff;
+    }
+
     .viewer-wrapper {
         display: flex;
         flex-direction: column;
@@ -21,6 +29,11 @@
         width: 50%;
         height: 50%;
         border-radius: 22px;
+
+        video {
+            position: relative;
+            height: 100%;
+        }
 
         .add-video-popup {
             border: 4px dashed #949292;

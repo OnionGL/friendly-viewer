@@ -1,11 +1,12 @@
 import { Injectable, Injector } from "@angular/core";
-import { BaseApiService } from "../../BaseApiService.service";
-import { TUser, TUserResponse } from "./types";
+import { BaseApiService } from "../BaseApiService.service";
 import { HttpClient , HttpHeaders  } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { TUser } from "../../types/user";
 
 @Injectable()
 export class LoginApiService extends BaseApiService<TUser> {
+
     constructor(injector: Injector){
         super(injector, 'user' , 'user')
         this.http = injector.get(HttpClient)

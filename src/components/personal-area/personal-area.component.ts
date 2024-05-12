@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { UserService } from "../../modules/user-module/user.service";
 import { Router } from "@angular/router";
 import { BehaviorSubject, Observable, Subject, first, map, of, switchMap } from "rxjs";
-import { TUser } from "../../services/ApiService/apiServices/Login/types";
-import { FileUploadService } from "../../services/ApiService/fileUpload/fileUpload.service";
+import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
 import { FormControl } from "@angular/forms";
-import { UserApiService } from "../../services/ApiService/users/users.service";
+import { UserApiService } from "../../api-services/users/users.service";
 import { ImagesService } from "../../services/image/images.servise";
+import { TUser } from "../../types/user";
+import { UserService } from "../../services/user/user.service";
 
 @Component({
     selector: 'personal-area',
@@ -52,7 +52,7 @@ export class PersonalAreaComponent implements OnInit {
         this.currentUser
             .pipe(
                 first(),
-                switchMap(user => this.userApiService.getUserById(user.id))
+                switchMap(user => this.userApiService.get(user.id))
             )
             .subscribe(user => {
                 this.currentUserApi = user
@@ -104,7 +104,7 @@ export class PersonalAreaComponent implements OnInit {
             imageId: this.newUploadImage?.getValue()
         }
 
-        this.userApiService.patchUser(updateUser)
+        this.userApiService.patch(updateUser)
             .pipe(
                 first()
             )
