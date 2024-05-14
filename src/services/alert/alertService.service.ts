@@ -3,9 +3,9 @@ import { Injectable } from "@angular/core";
 import { Observable, Subject, delay, map, of, shareReplay, skip, switchMap, tap, timer } from "rxjs";
 
 export enum AlertTypes {
-    WARNING,
-    SUCCESS,
-    ERROR
+    WARNING="WARNING",
+    SUCCESS="SUCCESS",
+    ERROR="ERROR"
 }
 
 type AlertParams = {
@@ -29,7 +29,7 @@ export class AlertService {
 
     public createAlert(params: AlertParams) {
 
-        const timerChanges = timer(4000).pipe(
+        const timerChanges = timer(params?.duration ?? 4000).pipe(
             tap(_ => this.alertSubject.next(null))
         )
 

@@ -2,9 +2,10 @@ import { Component, Inject } from "@angular/core";
 import { FileUploadService } from "../../../api-services/fileUpload/fileUpload.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { DomSanitizer } from "@angular/platform-browser";
-import { map, switchMap, tap } from "rxjs";
+import { BehaviorSubject, finalize, map, switchMap, tap } from "rxjs";
 import { RoomApiService } from "../../../api-services/room/roomApi.service";
 import { Socket } from "ngx-socket-io";
+import { AlertService, AlertTypes } from "../../../services/alert/alertService.service";
 
 @Component({
     selector: 'add-file',
@@ -14,6 +15,8 @@ import { Socket } from "ngx-socket-io";
 
 export class AddFileModalComponent {
 
+    public isLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject(false)
+
     constructor(
         private uploadService: FileUploadService,
         public dialogRef: MatDialogRef<AddFileModalComponent>,
@@ -21,6 +24,7 @@ export class AddFileModalComponent {
         private sanitizer: DomSanitizer,
         private roomApiService: RoomApiService,
         private socket: Socket,
+        private alertService: AlertService
     ) {
 
     }
@@ -35,12 +39,18 @@ export class AddFileModalComponent {
                 const file = target.files[0];
                 this.uploadService.upload(file)
                     .pipe(
+                        tap(_ => this.isLoadingSubject.next(true)),
                         switchMap(file => {
                             return this.roomApiService.addVideoToRoom(this.data.roomId , file.id).pipe(
                                 tap(_ => this.socket.emit("addVideo" , {roomId: this.data.roomId , videoId: file.id})),
                                 map(_ => file)
                             )
-                        })
+                        }),
+                        tap(_ => this.alertService.createAlert({
+                            content: 'Видео успешно загружено!',
+                            type: AlertTypes.SUCCESS
+                        })),
+                        finalize(() => this.isLoadingSubject.next(false))
                     )
                     .subscribe((res: any) => {
                         this.dialogRef.close()

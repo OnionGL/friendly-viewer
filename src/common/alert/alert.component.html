@@ -1,3 +1,9 @@
-<div *ngIf="alertService.alertChanges | async">
-    {{(alertService.alertChanges | async).content}}
+<div 
+    *ngIf="(alertService.alertChanges | async) as alert"
+    [ngClass]="{'error': alert.type == 'ERROR' , 'success': alert.type == 'SUCCESS' , 'warning': alert.type == 'WARNING'}"
+    class="alert"
+    @showHide
+>
+    <span class="title">{{alert.type}}</span>
+	<p class="content-text">{{alert.content}}</p>
 </div>

@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { Component, Inject } from "@angular/core";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 
 @Component({
     selector: 'add-user',
@@ -8,8 +9,15 @@ import { Component } from "@angular/core";
 
 export class AddUserModalComponent {
 
-    constructor() {
+    constructor(
+        @Inject(MAT_DIALOG_DATA) public data: {roomId: string},
+        public dialogRef: MatDialogRef<AddUserModalComponent>,
+    ) {
         
+    }
+
+    public closeModal() {
+        this.dialogRef.close()
     }
 
 }

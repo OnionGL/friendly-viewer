@@ -7,9 +7,9 @@
 </div>
 
 <div class="content">
-    http://localhost:4200/room/2313123124124124124
+    {{'http://localhost:4200/room/' + data.roomId}}
 </div>
 
 <div class="footer">
-    <button>Закрыть</button>
+    <button (click)="closeModal()">Закрыть</button>
 </div>

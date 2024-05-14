@@ -1,12 +1,13 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { BehaviorSubject, Observable, Subject, first, map, of, switchMap } from "rxjs";
+import { BehaviorSubject, Observable, Subject, catchError, first, map, of, switchMap, tap } from "rxjs";
 import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
 import { FormControl } from "@angular/forms";
 import { UserApiService } from "../../api-services/users/users.service";
 import { ImagesService } from "../../services/image/images.servise";
 import { TUser } from "../../types/user";
 import { UserService } from "../../services/user/user.service";
+import { AlertService, AlertTypes } from "../../services/alert/alertService.service";
 
 @Component({
     selector: 'personal-area',
@@ -39,7 +40,8 @@ export class PersonalAreaComponent implements OnInit {
                 private router: Router, 
                 private uploadService: FileUploadService,
                 private imageService: ImagesService,
-                private userApiService: UserApiService
+                private userApiService: UserApiService,
+                private alertService: AlertService
             ) { }
 
     public ngOnInit(): void {
@@ -97,16 +99,31 @@ export class PersonalAreaComponent implements OnInit {
 
     public updateUser = () => {
         
-        const updateUser: Partial<TUser> = {
+        let updateUser: Partial<TUser> = {
             id: this.currentUserApi.id,
             name: this.nameFormControl.value,
-            email: this.emailFormControl.value,
             imageId: this.newUploadImage?.getValue()
         }
 
+
+        updateUser = Object.entries(updateUser).reduce((acc, [ k, v ]) => v !== null ? { ...acc, [k]: v } : acc, {})
+
         this.userApiService.patch(updateUser)
             .pipe(
-                first()
+                first(),
+                catchError(err => {
+                    this.alertService.createAlert({
+                        type: AlertTypes.ERROR,
+                        content: "Ошибка обновления пользователя",
+                    })
+                    throw new Error("Произошла ошибка")
+                }),
+                tap(_ => {
+                    this.alertService.createAlert({
+                        type: AlertTypes.SUCCESS,
+                        content: "Успешно сохранено!",
+                    })
+                })
             )
             .subscribe(_ => {})
 

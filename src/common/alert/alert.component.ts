@@ -10,36 +10,29 @@ import { trigger, transition, style, group, animate } from "@angular/animations"
         trigger('showHide', [
             transition(':enter', [
                 style({
-                    height: 0,
-                    marginTop: '0',
-                    transform: 'translate3d(0, 40px, 0)',
+                    opacity: 0,
+                    transform: 'translateX(40px)',
                 }),
                 group([
                     animate(
-                    '450ms ease-out',
+                    '400ms ease-out',
                     style({
                         opacity: 1,
-                        height: '*',
-                    })
-                    ),
-                    animate(
-                    '150ms ease-out',
-                    style({
-                        transform: 'translate3d(0, 0, 0)',
-                        marginTop: '10px',
+                        transform: 'translateX(0)',
                     })
                     ),
                 ]),
             ]),
             transition(':leave', [
+                style({
+                    opacity: 1,
+                }),
                 group([
                     animate(
-                    '550ms 400ms cubic-bezier(0, 0, 0.19, 1)',
-                    style({ height: 0, marginTop: 0 })
-                    ),
-                    animate(
-                    '350ms cubic-bezier(0.550, 0.055, 0.675, 0.190)',
-                    style({ opacity: 0, transform: 'translate3d(100%, 0, 0)' })
+                    '400ms ease-out',
+                    style({
+                        opacity: 0,
+                    })
                     ),
                 ]),
             ]),
@@ -64,7 +57,7 @@ export class AlertComponent {
                 color = 'yellow'
                 break
             case AlertTypes.ERROR:
-                color = 'red'
+                color = '#290d0a'
                 break
             default:
                 color = ''

@@ -5,7 +5,7 @@ import { AddFileModalComponent } from "../modalComponents/addFileModal/addFile.c
 import { AddUserModalComponent } from "../modalComponents/addUserModal/addUser.component";
 import { Socket } from "ngx-socket-io";
 import { ActivatedRoute } from "@angular/router";
-import { BehaviorSubject, Observable, Subscription, first, forkJoin, map, of, scan, shareReplay, switchMap, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, finalize, first, forkJoin, map, of, scan, shareReplay, switchMap, tap } from "rxjs";
 import { UserApiService } from "../../api-services/users/users.service";
 import { UserService } from "../../services/user/user.service";
 import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
@@ -40,6 +40,8 @@ export class ViewerComponent implements OnInit {
     public videoData: Observable<SafeUrl>
 
     public usersInRoom: Observable<Array<any>>
+
+    public isLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject(false)
     
     private roomId: string
     
@@ -57,6 +59,7 @@ export class ViewerComponent implements OnInit {
 
     private initVideo() {
         this.videoData = this.socket.fromEvent<{videoId: number}>("addingVideo").pipe(
+            tap(_ => this.isLoadingSubject.next(true)),
             switchMap(({videoId}) => {
                 return this.uploadService.get(videoId)
             }),
@@ -65,6 +68,7 @@ export class ViewerComponent implements OnInit {
                 const videoUrl = URL.createObjectURL(videoBlob);
                 return this.sanitizer.bypassSecurityTrustUrl(videoUrl)
             }),
+            tap(() => this.isLoadingSubject.next(false)),
             shareReplay()
         )
     }
@@ -130,11 +134,11 @@ export class ViewerComponent implements OnInit {
     }
 
     public openAddVideoPopup() {
-        this.modalService.createDialog(AddFileModalComponent , {roomId: this.roomId} , {maxWidth: '500px' , maxHeight: '200px' , height: '100%'})
+        this.modalService.createDialog(AddFileModalComponent , {roomId: this.roomId} , {maxWidth: '500px' , maxHeight: '120px' , height: '100%'})
     }
 
     public openAddUserPopup() {
-        this.modalService.createDialog(AddUserModalComponent , {} , {maxWidth: '500px' , maxHeight: '200px' , height: '100%'})
+        this.modalService.createDialog(AddUserModalComponent , {roomId: this.roomId} , {maxWidth: '500px' , maxHeight: '200px' , height: '100%'})
     }
 
 }
