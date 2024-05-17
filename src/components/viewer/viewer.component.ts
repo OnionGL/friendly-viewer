@@ -1,17 +1,18 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ViewerService } from "../../services/viewer/viewer.service";
 import { ModalService } from "../../services/modal/modal.service";
 import { AddFileModalComponent } from "../modalComponents/addFileModal/addFile.component";
 import { AddUserModalComponent } from "../modalComponents/addUserModal/addUser.component";
 import { Socket } from "ngx-socket-io";
 import { ActivatedRoute } from "@angular/router";
-import { BehaviorSubject, Observable, Subscription, finalize, first, forkJoin, map, of, scan, shareReplay, switchMap, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, catchError, finalize, first, forkJoin, fromEvent, map, merge, of, scan, shareReplay, switchMap, tap } from "rxjs";
 import { UserApiService } from "../../api-services/users/users.service";
 import { UserService } from "../../services/user/user.service";
 import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
 import { ImagesService } from "../../services/image/images.servise";
 import { RoomApiService } from "../../api-services/room/roomApi.service";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { TUser } from "../../types/user";
 
 @Component({
     selector: 'viewer-component',
@@ -20,9 +21,21 @@ import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 })
 
 
-export class ViewerComponent implements OnInit {
+export class ViewerComponent implements OnInit , OnDestroy {
 
-    @ViewChild('videoPlayer') videoPlayer: any;
+    @ViewChild('videoPlayer') videoPlayer: any
+
+    @HostListener('window:beforeunload', ['$event'])
+    doSomething($event: any) {
+        this.ngOnDestroy()
+        $event.returnValue = 'Вы уверены, что хотите покинуть страницу?';
+    }
+
+    @HostListener('window:unload', ['$event'])
+    unloadHandler($event: any): void {
+        // this.ngOnDestroy(); // Вызов логики очистки
+        // $event.returnValue = 'Вы уверены, что хотите покинуть страницу?';
+    }
 
     constructor(
         private viewerService: ViewerService,
@@ -55,6 +68,25 @@ export class ViewerComponent implements OnInit {
         this.initWebSocketsData()
         this.initHistoryData()
         this.initVideo()
+        this.initWebSocketVideoController()
+    }
+
+    private initWebSocketVideoController() {
+        this.socket.fromEvent("allStart")
+            .subscribe(_ => {
+                this.videoPlayer.nativeElement.play()
+            })
+    
+        this.socket.fromEvent("allPause")
+            .subscribe(_ => {
+                this.videoPlayer.nativeElement.pause()
+            })
+    }
+
+    public ngOnDestroy(): void {
+        this.userService.currentUser
+            .pipe(first())
+            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id}))
     }
 
     private initVideo() {
@@ -68,20 +100,20 @@ export class ViewerComponent implements OnInit {
                 const videoUrl = URL.createObjectURL(videoBlob);
                 return this.sanitizer.bypassSecurityTrustUrl(videoUrl)
             }),
-            tap(() => this.isLoadingSubject.next(false)),
+            tap(_ => this.isLoadingSubject.next(false)),
             shareReplay()
         )
     }
 
-    public togglePlayVideo(event: Event) {
-
-        event.preventDefault()
-
-        event.stopPropagation()
-
-        const video: HTMLVideoElement = this.videoPlayer.nativeElement;
-
-
+    public playerController(event: any) {
+        
+        if(event?.type == "play") {
+            this.socket.emit("playVideo" , {roomId: this.roomId})
+        }
+        
+        if(event?.type == "pause") {
+            this.socket.emit("pauseVideo" , {roomId: this.roomId})
+        }
     }
 
     private initHistoryData() {
@@ -123,6 +155,20 @@ export class ViewerComponent implements OnInit {
                     switchMap(({roomId}) => {
                         this.roomId = roomId
                         return this.userService.currentUser.pipe(
+                            catchError(err => {
+                                if(err.statusText == "Unauthorized") {
+                                    return of("Unauthorized")
+                                }
+                                throw new Error("Error")
+                            }),
+                            switchMap((data): Observable<TUser> => {
+                                if(data == "Unauthorized") {
+                                    return this.userApiService.createGuestUser().pipe(
+                                        first()
+                                    )
+                                }
+                                return of(data as TUser)
+                            }),
                             tap(user => this.socket.emit("joinRoom" , {
                                 roomId,
                                 currentUserId: user.id
@@ -131,6 +177,9 @@ export class ViewerComponent implements OnInit {
                     }),
                 )
                 .subscribe(_ => {})
+                window.addEventListener("onbeforeunload", () => {
+                    this.ngOnDestroy()
+                });
     }
 
     public openAddVideoPopup() {
