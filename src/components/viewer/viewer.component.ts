@@ -4,8 +4,8 @@ import { ModalService } from "../../services/modal/modal.service";
 import { AddFileModalComponent } from "../modalComponents/addFileModal/addFile.component";
 import { AddUserModalComponent } from "../modalComponents/addUserModal/addUser.component";
 import { Socket } from "ngx-socket-io";
-import { ActivatedRoute } from "@angular/router";
-import { BehaviorSubject, Observable, Subscription, catchError, finalize, first, forkJoin, fromEvent, map, merge, of, scan, shareReplay, switchMap, tap } from "rxjs";
+import { ActivatedRoute, Router } from "@angular/router";
+import { BehaviorSubject, Observable, Subscription, catchError, finalize, first, forkJoin, fromEvent, map, merge, of, scan, shareReplay, startWith, switchMap, tap, timer } from "rxjs";
 import { UserApiService } from "../../api-services/users/users.service";
 import { UserService } from "../../services/user/user.service";
 import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
@@ -42,12 +42,13 @@ export class ViewerComponent implements OnInit , OnDestroy {
         private modalService: ModalService, 
         private socket: Socket, 
         private activeRoute: ActivatedRoute,
-        private userService: UserService,
+        public userService: UserService,
         private userApiService: UserApiService,
         private imagesService: ImagesService,
         private roomApiService: RoomApiService,
         private uploadService: FileUploadService,
         private sanitizer: DomSanitizer,
+        private router: Router
     ){}
 
     public videoData: Observable<SafeUrl>
@@ -62,13 +63,66 @@ export class ViewerComponent implements OnInit , OnDestroy {
 
     private historyDataChanges: Observable<any>
 
+    private currentTime: number = 0
+
+    public adminId: number = null
+
+    public currentUserId: number
 
     public ngOnInit(): void {
         this.initUsersList()
+        this.initAdminInRoom()
         this.initWebSocketsData()
         this.initHistoryData()
-        this.initVideo()
+        this.initVideoFromWebSocket()
         this.initWebSocketVideoController()
+        this.initCurrentTimeVideo()
+        this.initVideo()
+        this.initRemoveUsers()
+    }
+
+
+    private initRemoveUsers() {
+        this.socket.fromEvent("removeUserId")
+            .pipe(
+                switchMap(removeUserId => this.userService.currentUser.pipe(
+                    tap(user => {
+                        if(user.id == removeUserId) {
+                            this.router.navigate(['home'])
+                        }
+                    })
+                ))
+            )
+            .subscribe()
+    }
+
+    private initAdminInRoom() {
+        this.activeRoute.params
+            .pipe(
+                switchMap(({roomId}) => this.roomApiService.getAdminId(roomId))
+            )
+            .subscribe(({adminId}) => {
+                this.adminId = adminId
+            })
+        this.userService.currentUser
+            .pipe(
+                first()
+            )
+            .subscribe(({id}) => {
+                this.currentUserId = id
+            })
+        
+    }
+
+    private initCurrentTimeVideo() {
+        this.socket.fromEvent<{currentTime: number}>("changesCurrentTimeVideo")
+            .pipe(
+                    map(({currentTime}) => {
+                        this.videoPlayer.nativeElement.currentTime = currentTime
+                    }),
+            )
+            .subscribe(_ => {})
+
     }
 
     private initWebSocketVideoController() {
@@ -89,11 +143,57 @@ export class ViewerComponent implements OnInit , OnDestroy {
             .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id}))
     }
 
-    private initVideo() {
+    public timeUpdateController(event: any) {
+        this.socket.emit('timerUpdate' , {roomId: this.roomId , time: event.target.currentTime} )
+    }
+
+
+    private initVideo() { 
+
+        this.activeRoute.params.pipe(
+            switchMap(({roomId}) => {
+                return this.roomApiService.getVideo(roomId).pipe(
+                    tap(_ => this.isLoadingSubject.next(true)),
+                    switchMap(data => {
+                        if(!data?.videoId) return of(null)
+                        return this.uploadService.get(data.videoId)
+                    }),
+                    map(file => {
+                        if(!file) return null
+                        const videoBlob = new Blob([new Uint8Array(file.data.data)], { type: 'video/mp4' });;
+                        const videoUrl = URL.createObjectURL(videoBlob);
+                        return this.sanitizer.bypassSecurityTrustUrl(videoUrl)
+                    }),
+                    tap(_ => this.isLoadingSubject.next(false)),
+                    first()
+                )
+            }),
+            tap(file => {
+                if(file) {
+                    this.videoData = of(file)
+                }
+            }),
+            switchMap(file => this.socket.fromEvent<{roomId: string , time: number}>("timerUpload").pipe(
+                first(),
+                tap(({time}) => {
+                    if(file) {
+                        this.videoPlayer.nativeElement.currentTime = time
+                        this.videoPlayer.nativeElement.play()
+                    }
+                }),
+                map(_ => file)
+        ))
+        ).subscribe(() => {})
+
+    }
+
+    private initVideoFromWebSocket() {
         this.videoData = this.socket.fromEvent<{videoId: number}>("addingVideo").pipe(
             tap(_ => this.isLoadingSubject.next(true)),
             switchMap(({videoId}) => {
-                return this.uploadService.get(videoId)
+                return this.uploadService.get(videoId).pipe(
+                    first()
+                )
             }),
             map(file => {
                 const videoBlob = new Blob([new Uint8Array(file.data.data)], { type: 'video/mp4' });;
@@ -101,7 +201,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
                 return this.sanitizer.bypassSecurityTrustUrl(videoUrl)
             }),
             tap(_ => this.isLoadingSubject.next(false)),
-            shareReplay()
+            shareReplay({refCount: true , bufferSize: 1})
         )
     }
 
@@ -113,6 +213,13 @@ export class ViewerComponent implements OnInit , OnDestroy {
         
         if(event?.type == "pause") {
             this.socket.emit("pauseVideo" , {roomId: this.roomId})
+        }
+    }
+
+    public timerController(event: any) {
+        if(event.target.currentTime !== this.currentTime) {
+            this.currentTime = event.target.currentTime 
+            this.socket.emit("changeCurrentTimeVideo" , {roomId: this.roomId , currentTime: event.target.currentTime})
         }
     }
 
@@ -129,7 +236,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
                 const getCurrentUsersChanges = userIds.map(userId => {
                    return this.userApiService.get(userId).pipe(
                         switchMap(user => {
-                            const imageId = user.imageId
+                            const imageId = user?.imageId
 
                             if(imageId) {
                                 return this.imagesService.getImageById(imageId).pipe(
@@ -143,9 +250,15 @@ export class ViewerComponent implements OnInit , OnDestroy {
                    )
                 }) 
 
+
+
                 return forkJoin(getCurrentUsersChanges)
             }),
         )
+    }
+
+    public removeUser = (id: number) => {
+        this.socket.emit("removeUsers" , {roomId: this.roomId , removeUserId: id})
     }
 
     private initWebSocketsData() {
@@ -181,9 +294,10 @@ export class ViewerComponent implements OnInit , OnDestroy {
                     this.ngOnDestroy()
                 });
     }
+    
 
     public openAddVideoPopup() {
-        this.modalService.createDialog(AddFileModalComponent , {roomId: this.roomId} , {maxWidth: '500px' , maxHeight: '120px' , height: '100%'})
+        this.modalService.createDialog(AddFileModalComponent , {roomId: this.roomId} , {maxWidth: '500px' , maxHeight: '200px' , height: '100%'})
     }
 
     public openAddUserPopup() {

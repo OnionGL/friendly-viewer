@@ -8,6 +8,7 @@ import { ImagesService } from "../../services/image/images.servise";
 import { TUser } from "../../types/user";
 import { UserService } from "../../services/user/user.service";
 import { AlertService, AlertTypes } from "../../services/alert/alertService.service";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
     selector: 'personal-area',
@@ -41,7 +42,8 @@ export class PersonalAreaComponent implements OnInit {
                 private uploadService: FileUploadService,
                 private imageService: ImagesService,
                 private userApiService: UserApiService,
-                private alertService: AlertService
+                private alertService: AlertService,
+                private cookie: CookieService,
             ) { }
 
     public ngOnInit(): void {
@@ -71,6 +73,20 @@ export class PersonalAreaComponent implements OnInit {
 
     public onReadMode() {
         this.modeChanges.next("read")
+    }
+
+    public deleteUser() {
+        this.userService.currentUser.pipe(
+            first(),
+            switchMap(({id}) => this.userApiService.deleteUser(id))
+        ).subscribe(() => {
+            this.alertService.createAlert({
+                content: "Пользователь успешно удален",
+                type: AlertTypes.SUCCESS
+            })
+            this.cookie.delete("token")
+            this.router.navigate(['login'])
+        })
     }
 
     public setNewAvatar() {

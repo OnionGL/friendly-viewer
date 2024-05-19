@@ -12,7 +12,7 @@ export class LoginApiService extends BaseApiService<TUser> {
         this.http = injector.get(HttpClient)
     }
 
-    public loginUser(model: TUser): Observable<any> {
+    public loginUser(model: any): Observable<any> {
         return this.http.post('api/auth/login' , model)
     }
 

@@ -20,7 +20,7 @@ export class AddFileModalComponent {
     constructor(
         private uploadService: FileUploadService,
         public dialogRef: MatDialogRef<AddFileModalComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: {roomId: string},
+        @Inject(MAT_DIALOG_DATA) public data: { roomId: string },
         private sanitizer: DomSanitizer,
         private roomApiService: RoomApiService,
         private socket: Socket,
@@ -29,20 +29,29 @@ export class AddFileModalComponent {
 
     }
 
+    public extractVideoId(url: string): string {
+        const videoIdMatch = url.match(/[?&]v=([^&]+)/);
+        if (videoIdMatch && videoIdMatch[1]) {
+            return videoIdMatch[1];
+        } else {
+            return '';
+        }
+    }
+
     public addVideoContent() {
         const input = document.createElement('input');
         input.type = 'file'
         input.addEventListener('change', (event) => {
             const target = event.target as HTMLInputElement;
-            
+
             if (target.files && target.files.length > 0) {
                 const file = target.files[0];
                 this.uploadService.upload(file)
                     .pipe(
                         tap(_ => this.isLoadingSubject.next(true)),
                         switchMap(file => {
-                            return this.roomApiService.addVideoToRoom(this.data.roomId , file.id).pipe(
-                                tap(_ => this.socket.emit("addVideo" , {roomId: this.data.roomId , videoId: file.id})),
+                            return this.roomApiService.addVideoToRoom(this.data.roomId, file.id).pipe(
+                                tap(_ => this.socket.emit("addVideo", { roomId: this.data.roomId, videoId: file.id })),
                                 map(_ => file)
                             )
                         }),
@@ -56,7 +65,7 @@ export class AddFileModalComponent {
                         this.dialogRef.close()
                     })
             }
-            
+
             if (input.parentNode) {
                 input.parentNode.removeChild(input);
             }

@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
             first(),
             map(({id}) => id),
             switchMap(id => this.userApiService.get(id)),
-            switchMap(current => current.imageId ? this.imagesService.getImageById(current.imageId).pipe(map(image => ({...current , image}))) : of(null).pipe(map(_ => ({...current})))),
+            switchMap(current => current?.imageId ? this.imagesService.getImageById(current.imageId).pipe(map(image => ({...current , image}))) : of(null).pipe(map(_ => ({...current})))),
         )
     }
 

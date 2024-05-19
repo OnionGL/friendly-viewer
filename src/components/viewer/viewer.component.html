@@ -12,7 +12,7 @@
 </ng-container>
 
 <div class="viewer-wrapper" *ngIf="(videoData | async)">
-    <video #videoPlayer (pause)="playerController($event)" (play)="playerController($event)" controls="false">
+    <video #videoPlayer (timeupdate)="timeUpdateController($event)" (seeked)="timerController($event)" (pause)="playerController($event)" (play)="playerController($event)" controls="false">
         <source [src]="(videoData | async)" type="video/mp4">
     </video>
 </div>
@@ -24,6 +24,9 @@
             <img [src]="user?.image ?? 'assets/default-images/default-image.jpg'" alt="Image">
         </div>
 
+        <div class="delete-button" *ngIf="user?.id !== adminId && currentUserId == adminId">
+            <button (click)="removeUser(user?.id)">Delete</button>
+        </div>
         <div class="person-text">
             {{user?.name ?? 'unknown'}}
         </div>

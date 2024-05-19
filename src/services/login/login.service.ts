@@ -9,7 +9,7 @@ export class LoginService {
     
     constructor(private loginApiService: LoginApiService , private cookie: CookieService) {}
 
-    public loginUser(model: TUser): Observable<TUserResponse> {
+    public loginUser(model: any): Observable<any> {
         return this.loginApiService.loginUser(model).pipe(
             tap(userData => {
                 if(userData.token) {

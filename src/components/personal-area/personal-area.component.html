@@ -1,8 +1,17 @@
 <ng-template headerContent></ng-template>
 <div *ngIf="(currentUser | async) as user">
     <div *ngIf="(modeChanges | async) as mode">
-        <div class="title">
-            Личный кабинет
+
+        <div class="header">
+            
+            <div class="title">
+                Личный кабинет
+            </div>
+            
+            <button (click)="deleteUser()">
+                Удалить
+            </button>
+
         </div>
         
         <div class="content-wrapper">

@@ -19,8 +19,12 @@ export class RoomApiService extends BaseApiService<any> {
         return this.http.post('api/room/video' , {roomId , videoId})
     }
 
-    public getVideo(roomId: string) {
-        return this.http.get(`api/room/${roomId}`)
+    public getVideo(roomId: string): Observable<{videoId: number}> {
+        return this.http.get(`api/room/${roomId}`) as Observable<{videoId: number}>
+    }
+
+    public getAdminId(roomId: string): Observable<{adminId: number}> {
+        return this.http.get(`api/room/admin/${roomId}`) as Observable<{adminId: number}>
     }
 
 
