@@ -35,6 +35,13 @@
             height: 100%;
         }
 
+        .button-add-video {
+            background: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
         .add-video-popup {
             border: 4px dashed #949292;
             border-radius: 50%;
@@ -57,8 +64,9 @@
         justify-content: center;
         border-top: 5px solid #20203b;
         padding-top: 25px;
-
+        
         .person-wrapper {
+            position: relative;
             align-items: center;
             display: flex;
             flex-direction: column;
@@ -68,6 +76,16 @@
         .person-text {
             color: #fff;
             font-size: 16px;
+        }
+
+        .delete-button {
+            position: absolute;
+            right: -15px;
+            top: -20px;
+            .close-icon {
+                filter: invert(1);
+                width: 30px;
+            }
         }
 
         .person-image {

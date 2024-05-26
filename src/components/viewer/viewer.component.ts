@@ -5,7 +5,7 @@ import { AddFileModalComponent } from "../modalComponents/addFileModal/addFile.c
 import { AddUserModalComponent } from "../modalComponents/addUserModal/addUser.component";
 import { Socket } from "ngx-socket-io";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BehaviorSubject, Observable, Subscription, catchError, finalize, first, forkJoin, fromEvent, map, merge, of, scan, shareReplay, startWith, switchMap, tap, timer } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, catchError, finalize, first, forkJoin, fromEvent, map, merge, of, scan, share, shareReplay, startWith, switchMap, tap, timer } from "rxjs";
 import { UserApiService } from "../../api-services/users/users.service";
 import { UserService } from "../../services/user/user.service";
 import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
@@ -170,13 +170,15 @@ export class ViewerComponent implements OnInit , OnDestroy {
             }),
             tap(file => {
                 if(file) {
-                    this.videoData = of(file)
+                    this.videoData = of(file).pipe(
+                        map(_ => file)
+                    )
                 }
             }),
             switchMap(file => this.socket.fromEvent<{roomId: string , time: number}>("timerUpload").pipe(
                 first(),
                 tap(({time}) => {
-                    if(file) {
+                    if(file) {  
                         this.videoPlayer.nativeElement.currentTime = time
                         this.videoPlayer.nativeElement.play()
                     }
@@ -191,9 +193,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
         this.videoData = this.socket.fromEvent<{videoId: number}>("addingVideo").pipe(
             tap(_ => this.isLoadingSubject.next(true)),
             switchMap(({videoId}) => {
-                return this.uploadService.get(videoId).pipe(
-                    first()
-                )
+                return this.uploadService.get(videoId)
             }),
             map(file => {
                 const videoBlob = new Blob([new Uint8Array(file.data.data)], { type: 'video/mp4' });;
@@ -201,7 +201,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
                 return this.sanitizer.bypassSecurityTrustUrl(videoUrl)
             }),
             tap(_ => this.isLoadingSubject.next(false)),
-            shareReplay({refCount: true , bufferSize: 1})
+            shareReplay({refCount: false , bufferSize: 1})
         )
     }
 
@@ -282,10 +282,19 @@ export class ViewerComponent implements OnInit , OnDestroy {
                                 }
                                 return of(data as TUser)
                             }),
-                            tap(user => this.socket.emit("joinRoom" , {
-                                roomId,
-                                currentUserId: user.id
-                            })),
+                            tap(user => {
+                                    console.log("user" , user)
+                                    this.socket.emit("joinRoom" , {
+                                        roomId,
+                                        currentUserId: user.id,
+                                        alertMessage: `Пользователь ${user?.name ?? "Unknown"} зашел в комнату!`,
+                                        alertType: "SUCCESS"
+                                    })
+                                    this.socket.emit("joinRoom" , {
+                                        roomId,
+                                        currentUserId: user.id,
+                                    })
+                            }),
                         )
                     }),
                 )

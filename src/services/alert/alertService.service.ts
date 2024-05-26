@@ -1,5 +1,6 @@
 
 import { Injectable } from "@angular/core";
+import { Socket } from "ngx-socket-io";
 import { Observable, Subject, delay, map, of, shareReplay, skip, switchMap, tap, timer } from "rxjs";
 
 export enum AlertTypes {
@@ -23,8 +24,11 @@ export class AlertService {
 
     private alertSubject: Subject<AlertParams> = new Subject()
 
-    constructor() {
+    constructor(
+        private socket: Socket, 
+    ) {
         this.initAlertChanges()
+        this.initAlertSocketChanges()
     }
 
     public createAlert(params: AlertParams) {
@@ -41,6 +45,16 @@ export class AlertService {
         this.alertType = params?.type ?? AlertTypes.SUCCESS
 
         this.alertSubject.next(params)
+    }
+
+    private initAlertSocketChanges() {
+        this.socket.fromEvent<{message: string , alertType: AlertTypes}>("alertMessages")
+            .subscribe(({message , alertType}) => {
+                this.createAlert({
+                    content: message,
+                    type: alertType ?? AlertTypes.SUCCESS
+                })
+            })
     }
 
     private initAlertChanges() {
