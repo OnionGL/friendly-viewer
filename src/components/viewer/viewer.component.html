@@ -1,5 +1,7 @@
 <ng-template headerContent></ng-template>
 
+<button class="button-exit" (click)="exitRoom()">Покинуть комнату</button>
+
 <ng-container *ngIf="!(isLoadingSubject | async); else loader">
     <div class="viewer-wrapper" *ngIf="!(videoData | async)">
         <button class="add-video-popup" (click)="openAddVideoPopup()">
@@ -10,7 +12,6 @@
         </div>
     </div>
 </ng-container>
-
 <div class="viewer-wrapper" *ngIf="(videoData | async) && !(isLoadingSubject | async)">
     <video #videoPlayer (timeupdate)="timeUpdateController($event)" (seeked)="timerController($event)" (pause)="playerController($event)" (play)="playerController($event)" controls="false">
         <source [src]="(videoData | async)" type="video/mp4">

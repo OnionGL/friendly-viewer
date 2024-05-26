@@ -147,7 +147,16 @@ export class ViewerComponent implements OnInit , OnDestroy {
     public ngOnDestroy(): void {
         this.userService.currentUser
             .pipe(first())
-            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , alertMessage: `Пользователь ${user?.name} покинул комнату` , alertType: AlertTypes.WARNING}))
+            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id}))
+    }
+
+    public exitRoom(){
+        this.userService.currentUser
+            .pipe(
+                first(),
+                finalize(() => this.router.navigate(['home']))
+            )
+            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , alertMessage: `Пользователь ${user?.name ?? 'unknown'} покинул комнату` , alertType: AlertTypes.WARNING}))
     }
 
     public timeUpdateController(event: any) {
