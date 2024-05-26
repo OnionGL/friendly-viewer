@@ -33,7 +33,7 @@ export class AlertService {
 
     public createAlert(params: AlertParams) {
 
-        const timerChanges = timer(params?.duration ?? 4000).pipe(
+        const timerChanges = timer(params?.duration ?? 3000).pipe(
             tap(_ => this.alertSubject.next(null))
         )
 

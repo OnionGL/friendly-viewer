@@ -26,7 +26,7 @@
         </div>
 
         <div class="delete-button" *ngIf="user?.id !== adminId && currentUserId == adminId">
-            <button (click)="removeUser(user?.id)">
+            <button (click)="removeUser(user)">
                 <img class="close-icon" [src]="'assets/default-images/close.png'" alt="Close">
             </button>
         </div>

@@ -13,6 +13,7 @@ import { ImagesService } from "../../services/image/images.servise";
 import { RoomApiService } from "../../api-services/room/roomApi.service";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { TUser } from "../../types/user";
+import { AlertService, AlertTypes } from "../../services/alert/alertService.service";
 
 @Component({
     selector: 'viewer-component',
@@ -48,7 +49,8 @@ export class ViewerComponent implements OnInit , OnDestroy {
         private roomApiService: RoomApiService,
         private uploadService: FileUploadService,
         private sanitizer: DomSanitizer,
-        private router: Router
+        private router: Router,
+        private alertService: AlertService
     ){}
 
     public videoData: Observable<SafeUrl>
@@ -89,6 +91,11 @@ export class ViewerComponent implements OnInit , OnDestroy {
                     tap(user => {
                         if(user.id == removeUserId) {
                             this.router.navigate(['home'])
+                        } else {
+                            this.alertService.createAlert({
+                                content: `Пользователь ${user?.name ?? 'unknown'} был выгнан!`,
+                                type: AlertTypes.ERROR
+                            })
                         }
                     })
                 ))
@@ -140,7 +147,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
     public ngOnDestroy(): void {
         this.userService.currentUser
             .pipe(first())
-            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id}))
+            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , alertMessage: `Пользователь ${user?.name} покинул комнату` , alertType: AlertTypes.WARNING}))
     }
 
     public timeUpdateController(event: any) {
@@ -257,8 +264,8 @@ export class ViewerComponent implements OnInit , OnDestroy {
         )
     }
 
-    public removeUser = (id: number) => {
-        this.socket.emit("removeUsers" , {roomId: this.roomId , removeUserId: id})
+    public removeUser = (user: TUser) => {
+        this.socket.emit("removeUsers" , {roomId: this.roomId , removeUserId: user?.id , alertMessage: `Пользователь ${user?.name ?? 'unknown'} был выгнан из комнаты`})
     }
 
     private initWebSocketsData() {
@@ -280,10 +287,12 @@ export class ViewerComponent implements OnInit , OnDestroy {
                                         first()
                                     )
                                 }
-                                return of(data as TUser)
+
+                                const user = data as TUser
+
+                                return this.userApiService.get(user.id)
                             }),
                             tap(user => {
-                                    console.log("user" , user)
                                     this.socket.emit("joinRoom" , {
                                         roomId,
                                         currentUserId: user.id,

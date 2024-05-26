@@ -9,6 +9,8 @@ import { TUser } from "../../types/user";
 import { UserService } from "../../services/user/user.service";
 import { AlertService, AlertTypes } from "../../services/alert/alertService.service";
 import { CookieService } from "ngx-cookie-service";
+import { LoginService } from "../../services/login/login.service";
+import { LoginApiService } from "../../api-services/login/Login.service";
 
 @Component({
     selector: 'personal-area',
@@ -43,6 +45,7 @@ export class PersonalAreaComponent implements OnInit {
                 private imageService: ImagesService,
                 private userApiService: UserApiService,
                 private alertService: AlertService,
+                private loginApiService: LoginApiService,
                 private cookie: CookieService,
             ) { }
 
@@ -118,6 +121,8 @@ export class PersonalAreaComponent implements OnInit {
         let updateUser: Partial<TUser> = {
             id: this.currentUserApi.id,
             name: this.nameFormControl.value,
+            email: this.currentUserApi.email,
+            password: this.currentUserApi.password,
             imageId: this.newUploadImage?.getValue()
         }
 
@@ -139,7 +144,7 @@ export class PersonalAreaComponent implements OnInit {
                         type: AlertTypes.SUCCESS,
                         content: "Успешно сохранено!",
                     })
-                })
+                }),
             )
             .subscribe(_ => {})
 

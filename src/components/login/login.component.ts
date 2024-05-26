@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit , OnDestroy {
             .pipe(
                 catchError(err => {
                     this.alertService.createAlert({content: "Ошибка регистрация" , type: AlertTypes.ERROR})
-                    throw new Error("Ошибка регистрация")
+                    throw new Error("Ошибка регистрации")
                 }),
                 tap(_ => this.alertService.createAlert({content: "Регистрация прошла успешно" , type: AlertTypes.SUCCESS}))
             )
