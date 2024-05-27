@@ -116,6 +116,11 @@ export class PersonalAreaComponent implements OnInit {
         document.appendChild(input);
     }
 
+    public exit() {
+        this.cookie.delete("token")
+        this.router.navigate(["login"])
+    }
+
     public updateUser = () => {
         
         let updateUser: Partial<TUser> = {

@@ -5,7 +5,7 @@ import { AddFileModalComponent } from "../modalComponents/addFileModal/addFile.c
 import { AddUserModalComponent } from "../modalComponents/addUserModal/addUser.component";
 import { Socket } from "ngx-socket-io";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BehaviorSubject, Observable, Subscription, catchError, finalize, first, forkJoin, fromEvent, map, merge, of, scan, share, shareReplay, startWith, switchMap, tap, timer } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, catchError, delay, finalize, first, forkJoin, fromEvent, map, merge, of, scan, share, shareReplay, startWith, switchMap, tap, timer } from "rxjs";
 import { UserApiService } from "../../api-services/users/users.service";
 import { UserService } from "../../services/user/user.service";
 import { FileUploadService } from "../../api-services/fileUpload/fileUpload.service";
@@ -14,6 +14,7 @@ import { RoomApiService } from "../../api-services/room/roomApi.service";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { TUser } from "../../types/user";
 import { AlertService, AlertTypes } from "../../services/alert/alertService.service";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
     selector: 'viewer-component',
@@ -50,7 +51,8 @@ export class ViewerComponent implements OnInit , OnDestroy {
         private uploadService: FileUploadService,
         private sanitizer: DomSanitizer,
         private router: Router,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private cookie: CookieService
     ){}
 
     public videoData: Observable<SafeUrl>
@@ -87,10 +89,15 @@ export class ViewerComponent implements OnInit , OnDestroy {
     private initRemoveUsers() {
         this.socket.fromEvent("removeUserId")
             .pipe(
-                switchMap(removeUserId => this.userService.currentUser.pipe(
+                switchMap(removeUserId => this.userApiService.get(Number(removeUserId)).pipe(
+                    tap(_ => !this.currentUserId && this.initAdminInRoom()),
+                    delay(1000),
                     tap(user => {
-                        if(user.id == removeUserId) {
+                        if(user.id == this.currentUserId && !user.isGuest) {
                             this.router.navigate(['home'])
+                        } else if(user.id == this.currentUserId && user.isGuest) {
+                            this.cookie.delete("token")
+                            this.router.navigate(['login'])
                         } else {
                             this.alertService.createAlert({
                                 content: `Пользователь ${user?.name ?? 'unknown'} был выгнан!`,
@@ -106,14 +113,15 @@ export class ViewerComponent implements OnInit , OnDestroy {
     private initAdminInRoom() {
         this.activeRoute.params
             .pipe(
-                switchMap(({roomId}) => this.roomApiService.getAdminId(roomId))
+                switchMap(({roomId}) => this.roomApiService.getAdminId(roomId)),
             )
             .subscribe(({adminId}) => {
                 this.adminId = adminId
             })
         this.userService.currentUser
             .pipe(
-                first()
+                first(),
+                catchError(err => of(null))
             )
             .subscribe(({id}) => {
                 this.currentUserId = id
@@ -274,6 +282,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
     }
 
     public removeUser = (user: TUser) => {
+        console.log("user delete" , user)
         this.socket.emit("removeUsers" , {roomId: this.roomId , removeUserId: user?.id , alertMessage: `Пользователь ${user?.name ?? 'unknown'} был выгнан из комнаты`})
     }
 

@@ -4,6 +4,7 @@ export type TUser = {
     name: string
     password: string
     imageId: number
+    isGuest: boolean
 }
 
 export type TUserResponse = {
