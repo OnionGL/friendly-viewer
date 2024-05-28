@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ViewerService } from "../../services/viewer/viewer.service";
 import { ModalService } from "../../services/modal/modal.service";
 import { AddFileModalComponent } from "../modalComponents/addFileModal/addFile.component";
@@ -23,7 +23,7 @@ import { CookieService } from "ngx-cookie-service";
 })
 
 
-export class ViewerComponent implements OnInit , OnDestroy {
+export class ViewerComponent implements OnDestroy , AfterViewInit {
 
     @ViewChild('videoPlayer') videoPlayer: any
 
@@ -52,7 +52,8 @@ export class ViewerComponent implements OnInit , OnDestroy {
         private sanitizer: DomSanitizer,
         private router: Router,
         private alertService: AlertService,
-        private cookie: CookieService
+        private cookie: CookieService,
+        private cdr: ChangeDetectorRef
     ){}
 
     public videoData: Observable<SafeUrl>
@@ -73,7 +74,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
 
     public currentUserId: number
 
-    public ngOnInit(): void {
+    public ngAfterViewInit() {
         this.initUsersList()
         this.initAdminInRoom()
         this.initWebSocketsData()
@@ -115,8 +116,8 @@ export class ViewerComponent implements OnInit , OnDestroy {
             .pipe(
                 switchMap(({roomId}) => this.roomApiService.getAdminId(roomId)),
             )
-            .subscribe(({adminId}) => {
-                this.adminId = adminId
+            .subscribe(data => {
+                this.adminId = data.adminId
             })
         this.userService.currentUser
             .pipe(
@@ -133,38 +134,51 @@ export class ViewerComponent implements OnInit , OnDestroy {
         this.socket.fromEvent<{currentTime: number}>("changesCurrentTimeVideo")
             .pipe(
                     map(({currentTime}) => {
-                        this.videoPlayer.nativeElement.currentTime = currentTime
+                            this.videoPlayer.nativeElement.currentTime = currentTime
                     }),
             )
-            .subscribe(_ => {})
+            .subscribe(_ => {
+                
+            })
 
     }
 
     private initWebSocketVideoController() {
         this.socket.fromEvent("allStart")
             .subscribe(_ => {
-                this.videoPlayer.nativeElement.play()
+                setTimeout(() => {
+                    this.videoPlayer.nativeElement.play()
+                })
             })
     
         this.socket.fromEvent("allPause")
             .subscribe(_ => {
-                this.videoPlayer.nativeElement.pause()
+                setTimeout(() => {
+                    this.videoPlayer.nativeElement.pause()
+                })  
             })
     }
 
     public ngOnDestroy(): void {
         this.userService.currentUser
             .pipe(first())
-            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id}))
+            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , adminId: this.adminId}))
     }
 
     public exitRoom(){
         this.userService.currentUser
             .pipe(
                 first(),
-                finalize(() => this.router.navigate(['home']))
             )
-            .subscribe(user => this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , alertMessage: `Пользователь ${user?.name ?? 'unknown'} покинул комнату` , alertType: AlertTypes.WARNING}))
+            .subscribe(user => {
+                    this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , adminId: this.adminId , alertMessage: `Пользователь ${user?.name ?? 'unknown'} покинул комнату` , alertType: AlertTypes.WARNING})
+                    if(user.isGuest) {
+                        this.router.navigate(['login'])
+                    } else {
+                        this.router.navigate(['home'])
+                    }
+                }
+            )
     }
 
     public timeUpdateController(event: any) {
@@ -203,14 +217,17 @@ export class ViewerComponent implements OnInit , OnDestroy {
                 first(),
                 tap(({time}) => {
                     if(file) {  
-                        this.videoPlayer.nativeElement.currentTime = time
-                        this.videoPlayer.nativeElement.play()
+                            this.videoPlayer.nativeElement.currentTime = time
+                            this.videoPlayer.nativeElement.play()
                     }
                 }),
                 map(_ => file)
         ))
-        ).subscribe(() => {})
-
+        ).subscribe(() => {
+        })
+        setTimeout(() => {
+            this.cdr.detectChanges()
+        } , 1000)
     }
 
     private initVideoFromWebSocket() {
@@ -282,7 +299,6 @@ export class ViewerComponent implements OnInit , OnDestroy {
     }
 
     public removeUser = (user: TUser) => {
-        console.log("user delete" , user)
         this.socket.emit("removeUsers" , {roomId: this.roomId , removeUserId: user?.id , alertMessage: `Пользователь ${user?.name ?? 'unknown'} был выгнан из комнаты`})
     }
 
@@ -325,7 +341,7 @@ export class ViewerComponent implements OnInit , OnDestroy {
                         )
                     }),
                 )
-                .subscribe(_ => {})
+                .subscribe(_ => {                })
                 window.addEventListener("onbeforeunload", () => {
                     this.ngOnDestroy()
                 });
