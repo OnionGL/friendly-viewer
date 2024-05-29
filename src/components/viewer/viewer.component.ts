@@ -99,11 +99,6 @@ export class ViewerComponent implements OnDestroy , AfterViewInit {
                         } else if(user.id == this.currentUserId && user.isGuest) {
                             this.cookie.delete("token")
                             this.router.navigate(['login'])
-                        } else {
-                            this.alertService.createAlert({
-                                content: `Пользователь ${user?.name ?? 'unknown'} был выгнан!`,
-                                type: AlertTypes.ERROR
-                            })
                         }
                     })
                 ))
