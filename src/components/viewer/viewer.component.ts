@@ -164,6 +164,7 @@ export class ViewerComponent implements OnDestroy , AfterViewInit {
         this.userService.currentUser
             .pipe(
                 first(),
+                switchMap(({id}) => this.userApiService.get(id))
             )
             .subscribe(user => {
                     this.socket.emit("leaveRoom" , {roomId: this.roomId , currentUserId: user.id , adminId: this.adminId , alertMessage: `Пользователь ${user?.name ?? 'unknown'} покинул комнату` , alertType: AlertTypes.WARNING})
